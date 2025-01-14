@@ -10,9 +10,17 @@ To install to your cluster, you should create it first! There is an [example](ex
 kind create cluster --config ./example/kind-config.yaml
 ```
 
+And for AWS:
+
+```bash
+eksctl create cluster --config-file ./example/eks-config-2.yaml 
+aws eks update-kubeconfig --region us-east-2 --name flux-service-cluster
+```
+
 Then install the daemonset. 
 
 ```bash
+# make install
 kubectl apply -f ./daemonset-installer.yaml
 ```
 
@@ -49,8 +57,6 @@ You can either shell into the associated daemonset pods and run nsenter:
 nsenter -t 1 -m bash
 ./flux-connect.sh
 flux run -N 2 -n 2 /osu-micro-benchmarks-5.8/mpi/pt2pt/osu_latency
-flux run -N 1 -n 2 netmark -w 10 -t 20 -c 100 -b 0 -s
-flux run -N 2 -n 2 netmark -w 10 -t 20 -c 100 -b 0 -s
 ```
 
 Or use the kubectl node-shell plugin (which does the same)
@@ -59,15 +65,19 @@ Or use the kubectl node-shell plugin (which does the same)
 kubectl node-shell kind-worker
 ```
 
-Run the script that the daemonset prepares to connect to the broker:
+Install the flux operator (outside of the cluster):
 
 ```bash
- ./flux-connect.sh 
-root@kind-worker:/# flux resource list
-     STATE NNODES   NCORES    NGPUS NODELIST
-      free      4       32        0 kind-worker,kind-worker[2-4]
- allocated      0        0        0 
-      down      0        0        0 
+kubectl apply -f https://raw.githubusercontent.com/flux-framework/flux-operator/refs/heads/main/examples/dist/flux-operator.yaml
+```
+
+Create a container that will also have OSU benchmarks.
+
+```bash
+kubectl apply -f example/osu.yaml
+kubectl exec -it flux-sample-0-92974 bash
+flux proxy local:///mnt/flux/view/run/flux/local bash
+flux run -N 2 -n 2 /opt/osu-benchmark/build.openmpi/mpi/pt2pt/osu_latency
 ```
 
 Boum! Bing badda... boom! 💥

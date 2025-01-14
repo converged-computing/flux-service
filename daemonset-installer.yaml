@@ -19,17 +19,9 @@ spec:
       # to generate the flux config
       serviceAccount: *name
       containers:
-      - image: ghcr.io/converged-computing/flux-distribute:netmark
+      - image: ghcr.io/converged-computing/flux-service:latest
         imagePullPolicy: Always
         name: *name
-        # netmark 
-        #  -w warmup
-        #  -t trials
-        #  -c send/receive cycles
-        #  -b message size in bytes
-        #  -s store trial
-        # flux run -N 1 -n 96 netmark -w 10 -t 20 -c 100 -b 0 -s
-        # flux run -N 2 -n 192 netmark -w 10 -t 20 -c 100 -b 0 -s
         # nsenter enters the process of the running host (vs. container)
         # You can sleep infinity and nsenter with bash to test or debug
         #command: ["sleep", "infinity"]

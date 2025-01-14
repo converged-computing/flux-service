@@ -13,7 +13,7 @@ import sys
 
 links = subprocess.check_output(['ip', 'link']).decode('utf-8')
 lines = [x for x in links.split('\n') if x.strip()]
-lines = [x for x in lines if 'eth' in x and "UP" in x]
+lines = [x for x in lines if 'eth' in x or "ens" in x and "UP" in x]
 lines = lines[0]
-linkname = [x for x in lines.split(' ') if 'eth' in x][0].replace(':','')
+linkname = [x for x in lines.split(' ') if 'eth' in x or "ens" in x][0].replace(':','')
 print(linkname)

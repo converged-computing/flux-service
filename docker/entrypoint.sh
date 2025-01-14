@@ -36,6 +36,7 @@ echo "Copying install files onto the host node"
 cp ${INSTALL_FILE} /mnt/install/install.sh
 cp /flux-install/parse-links.py /mnt/install/parse-links.py
 cp /flux-install/install-debian.sh /mnt/install/install-debian.sh
+cp /flux-install/install-fedora.sh /mnt/install/install-fedora.sh
 chmod +x /mnt/install/install.sh
 
 # This gets executed with nsenter to pid 1, the init process

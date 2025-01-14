@@ -4,15 +4,9 @@ set -o pipefail
 # set -o nounset
 # set -o errexit
 
-# Note: I don't have a check to see if we have already installed
-# flux - the idea being that if we delete and reinstall the daemonset,
-# we would want this to re-generate. That said, we do need a means
-# to allow for autoscaling (adding new nodes) that works out of
-# the box. Let's better test this alter.
-
-touch /opt/flux-finished.txt
 if ! test -f /opt/flux-finished.txt; then
     apt-get update && /bin/bash /mnt/install/install-debian.sh
+    yum update -y && /bin/bash /mnt/install/install-fedora.sh
     cp /mnt/install/finished.txt /opt/flux-finished.txt
 fi
 
@@ -52,8 +46,8 @@ if ! test -f /osu-micro-benchmarks-5.8/mpi/pt2pt/osu_latency; then
     wget http://mvapich.cse.ohio-state.edu/download/mvapich/osu-micro-benchmarks-$OSU_VERSION.tgz
     tar zxvf ./osu-micro-benchmarks-5.8.tgz
     cd osu-micro-benchmarks-5.8/
-    ./configure CC=/usr/bin/mpicc CXX=/usr/bin/mpicxx
-    make -j 4 && make install
+    ./configure CC=/usr/bin/mpicc CXX=/usr/bin/mpicxx || ./configure CC=/usr/lib64/openmpi/bin/mpicc CXX=/usr/lib64/openmpi/bin/mpicxx
+    make -j && make install
 fi
 
 # Flux curve.cert
